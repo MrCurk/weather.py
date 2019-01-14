@@ -7,6 +7,7 @@
   "DB_TNS": "xxx",
   "DB_USERNAME": "xxx",
   "DB_PASSWORD": "xxx",
+  "test_mode_no_db": "true",
   "City": [
     {
       "country": "SI",

@@ -95,7 +95,6 @@ def getApiValue(item, key1, key2=None):
 
 ########################################################################################################################
 ### function print log
-
 def printLog(text, value):
     utcnow = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     now = datetime.now().strftime('%H:%M:%S')
@@ -103,6 +102,7 @@ def printLog(text, value):
 
 
 ########################################################################################################################
+# function to fetch weather data from DarkSky web page
 def fetchCityWeather(country, name, latitude, longitude, appid):
     url = "https://api.darksky.net/forecast/{APPID}/{LATITUDE},{LONGITUDE}?exclude=minutely,hourly&units=si".format(
         APPID=appid, LATITUDE=str(latitude), LONGITUDE=str(longitude))
@@ -139,16 +139,26 @@ def fetchCityWeather(country, name, latitude, longitude, appid):
 
 
 ########################################################################################################################
-# variables
-# disable db connection for testing mode
-db_NO_CONNECTION = False
+# string to boolean
+def str_to_bool(s):
+    if s.upper() == 'TRUE':
+        return True
+    elif s.upper() == 'FALSE':
+        return False
+    else:
+        raise ValueError
+
 
 ########################################################################################################################
 ##  CONFIG PARAMETERS - geting data from config file
 config_json = open("config.json").read()
 config_data = json.loads(config_json)
-# openWeather id
+
+# DarkSky appid
 appid = config_data["APPID_DarkSky"]
+
+# test mode, without db connection == True
+test_mode_no_db = str_to_bool(config_data["test_mode_no_db"])
 
 # connection string
 connection_string = config_data["DB_USERNAME"] + "/" + config_data["DB_PASSWORD"] + "@" + config_data["DB_TNS"]
@@ -160,17 +170,22 @@ for item in config_data["City"]:
 
 ########################################################################################################################
 cityWeather = list()
-
+# create a list of city with weather data
 for city in city_list:
     # get weather data
     cityWeather.append(fetchCityWeather(city.country, city.name, city.latitude, city.longitude, appid))
 
-if db_NO_CONNECTION == False:
+# connect to db, when not in test mode
+con = None
+cursor = None
+if test_mode_no_db == False:
     con = cx_Oracle.connect(connection_string)
     cursor = con.cursor()
 
+# loop through list of citys weather
 for item in cityWeather:
-    if db_NO_CONNECTION == False:
+    # inserting into db
+    if test_mode_no_db == False:
         printLog("inserting data", item.name)
         cursor.callproc('ADD_CITY_WEATHER',
                         [item.country, item.name, item.lat, item.lon, item.timezone, item.date_time, item.weather,
@@ -179,6 +194,7 @@ for item in cityWeather:
                          item.dewPoint, item.humidity, item.pressure, item.windSpeed, item.windGust,
                          item.windBearing, item.cloudCover, item.uvIndex, item.visibility, item.ozone,
                          item.nearest_station, item.units, item.forecast_summary])
+    # testing mode only print
     else:
         print(item.country, item.name, item.lat, item.lon, item.timezone, item.date_time, item.weather,
               item.weather_icon, item.precipIntensity,
@@ -187,5 +203,6 @@ for item in cityWeather:
               item.windBearing, item.cloudCover, item.uvIndex, item.visibility, item.ozone,
               item.nearest_station, item.units, item.forecast_summary)
 
-if db_NO_CONNECTION == False:
+# close db connection
+if test_mode_no_db == False:
     con.close()
