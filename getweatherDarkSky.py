@@ -82,6 +82,67 @@ class CityWeather(object):
 
 
 ########################################################################################################################
+### CITYFORECAST_DAILY CLASS
+class CityForecastDaily:
+    def __init__(self, name, country, latitude, longitude, date_time, weather, weather_icon, sunriseTime, sunsetTime,
+                 moonPhase, precipIntensity, precipIntensityMax, precipIntensityMaxTime, precipProbability,
+                 precipAccumulation,
+                 precipType, temperatureHigh, temperatureHighTime, temperatureLow, temperatureLowTime,
+                 apparentTemperatureHigh,
+                 apparentTemperatureHighTime, apparentTemperatureLow, apparentTemperatureLowTime, dewPoint, humidity,
+                 pressure, windSpeed, windGust, windGustTime, windBearing, cloudCover, uvIndex, uvIndexTime, visibility,
+                 ozone, temperatureMin, temperatureMinTime, temperatureMax, temperatureMaxTime, apparentTemperatureMin,
+                 apparentTemperatureMinTime, apparentTemperatureMax, apparentTemperatureMaxTime):
+        self.name = name,
+        self.country = country,
+        self.lat = latitude,
+        self.lon = longitude,
+        self.date_time = date_time,
+        self.weather = weather,
+        self.weather_icon = weather_icon,
+        self.sunriseTime = sunriseTime,
+        self.sunsetTime = sunsetTime,
+        self.moonPhase = moonPhase,
+        self.precipIntensity = precipIntensity,
+        self.precipIntensityMax = precipIntensityMax,
+        self.precipIntensityMaxTime = precipIntensityMaxTime,
+        self.precipProbability = precipProbability,
+        self.precipAccumulation = precipAccumulation,
+        self.precipType = precipType,
+        self.temperatureHigh = temperatureHigh,
+        self.temperatureHighTime = temperatureHighTime,
+        self.temperatureLow = temperatureLow,
+        self.temperatureLowTime = temperatureLowTime,
+        self.apparentTemperatureHigh = apparentTemperatureHigh,
+        self.apparentTemperatureHighTime = apparentTemperatureHighTime,
+        self.apparentTemperatureLow = apparentTemperatureLow,
+        self.apparentTemperatureLowTime = apparentTemperatureLowTime,
+        self.dewPoint = dewPoint,
+        self.humidity = humidity,
+        self.pressure = pressure,
+        self.windSpeed = windSpeed,
+        self.windGust = windGust,
+        self.windGustTime = windGustTime,
+        self.windBearing = windBearing,
+        self.cloudCover = cloudCover,
+        self.uvIndex = uvIndex,
+        self.uvIndexTime = uvIndexTime,
+        self.visibility = visibility,
+        self.ozone = ozone,
+        self.temperatureMin = temperatureMin,
+        self.temperatureMinTime = temperatureMinTime,
+        self.temperatureMax = temperatureMax,
+        self.temperatureMaxTime = temperatureMaxTime,
+        self.apparentTemperatureMin = apparentTemperatureMin,
+        self.apparentTemperatureMinTime = apparentTemperatureMinTime,
+        self.apparentTemperatureMax = apparentTemperatureMax,
+        self.apparentTemperatureMaxTime = apparentTemperatureMaxTime
+
+    def printData(self):
+        print("TODO")
+
+
+########################################################################################################################
 ### function try/catch if obj hasn't exist
 def getApiValue(item, key1, key2=None):
     try:
