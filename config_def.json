@@ -1,0 +1,124 @@
+{
+  "APPID_OpenWeather": "xxx",
+  "APPID_DarkSky": "xxx",
+  "url_DarkSky": "https://api.darksky.net/forecast/xxx/46.5176,13.7516?exclude=minutely,hourly&units=si&lang=sl",
+  "APPID_WordWeatherOnline": "xxx",
+  "url_WordWeatherOnline":"https://api.worldweatheronline.com/premium/v1/weather.ashx?key=xxx&q=nova gorica&format=json&num_of_days=5&mca=no&tp=24&showlocaltime=yes",
+  "DB_TNS": "xxx",
+  "DB_USERNAME": "xxx",
+  "DB_PASSWORD": "xxx",
+  "City": [
+    {
+      "country": "Slovenija",
+      "name": "Nova Gorica",
+      "id_OW": 3194452,
+      "latitude": 45.9577,
+      "longitude": 13.6474
+    },
+    {
+      "country": "Slovenija",
+      "name": "Kobarid",
+      "id_OW": 3197983,
+      "latitude": 46.2490,
+      "longitude": 13.5728
+    },
+    {
+      "country": "Slovenija",
+      "name": "Sentilj",
+      "id_OW": 3191039,
+      "latitude": 46.6773,
+      "longitude": 15.6483
+    },
+    {
+      "country": "Slovenija",
+      "name": "Kranjska Gora",
+      "id_OW": 3197373,
+      "latitude": 46.4835,
+      "longitude": 13.7867
+    },
+    {
+      "country": "Slovenija",
+      "name": "Korensko Sedlo",
+      "id_OW": 0,
+      "latitude": 46.5176,
+      "longitude": 13.7516
+    },
+    {
+      "country": "Slovenija",
+      "name": "Rogaska Slatina",
+      "id_OW": 3191580,
+      "latitude": 46.2343,
+      "longitude": 15.6386
+    },
+    {
+      "country": "Slovenija",
+      "name": "Maribor",
+      "id_OW": 3195506,
+      "latitude": 46.5604,
+      "longitude": 15.6474
+    },
+    {
+      "country": "Slovenija",
+      "name": "Ljubljana",
+      "id_OW": 3196359,
+      "latitude": 46.0524,
+      "longitude": 14.5058
+    },
+    {
+      "country": "Hrvaška",
+      "name": "Zagreb",
+      "id_OW": 3186886,
+      "latitude": 45.8134,
+      "longitude": 15.9757
+    },
+    {
+      "country": "Avstrija",
+      "name": "Graz",
+      "id_OW": 2778067,
+      "latitude": 47.0715,
+      "longitude": 15.4366
+    },
+    {
+      "country": "Avstrija",
+      "name": "Wien",
+      "id_OW": 2761367,
+      "latitude": 48.2088,
+      "longitude": 16.3715
+    },
+    {
+      "country": "Avstrija",
+      "name": "Leibnitz",
+      "id_OW": 7872406,
+      "latitude": 46.7819,
+      "longitude": 15.5394
+    },
+    {
+      "country": "Avstrija",
+      "name": "Villach",
+      "id_OW": 7871492,
+      "latitude": 46.6139,
+      "longitude": 13.8464
+    },
+    {
+      "country": "Italija",
+      "name": "Udine",
+      "id_OW": 6540119,
+      "latitude": 46.0635,
+      "longitude": 13.2351
+    },
+    {
+      "country": "Italija",
+      "name": "Trieste",
+      "id_OW": 3165186,
+      "latitude": 45.6522,
+      "longitude": 13.7709
+    },
+    {
+      "country": "Italija",
+      "name": "Padova",
+      "id_OW": 6542281,
+      "latitude": 45.4067,
+      "longitude": 11.8763
+    }
+  ]
+}
