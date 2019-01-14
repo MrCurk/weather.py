@@ -21,20 +21,21 @@ class City:
 ########################################################################################################################
 ### CITYWEATHER CLASS - Dark Sky api weather data for city
 class CityWeather(object):
-    def __init__(self, country, name, lon, lat, timezone, date_time, weather, weather_icon, precipIntensity,
-                 precipProbability, temperature, apparentTemperature, dewPoint, humidity, pressure, windSpeed, windGust,
-                 windBearing, cloudCover, uvIndex, visibility, ozone, nearest_station, units, alert_title
-                 , alert_description, alert_regions, alert_severity, alert_issued_time, alert_expires_time, forecast_summary):
+    def __init__(self, country, name, lat, lon, timezone, date_time, weather, weather_icon, precipIntensity,
+                 precipProbability, precipType, temperature, apparentTemperature, dewPoint, humidity, pressure,
+                 windSpeed, windGust,
+                 windBearing, cloudCover, uvIndex, visibility, ozone, nearest_station, units, forecast_summary):
         self.country = country
-        self.timezone = timezone
         self.name = name
-        self.lon = lon
         self.lat = lat
-        self.date_time = date_time
+        self.lon = lon
+        self.timezone = timezone
+        self.date_time = datetime.utcfromtimestamp(date_time).strftime('%Y-%m-%d %H:%M:%S')
         self.weather = weather
         self.weather_icon = weather_icon
         self.precipIntensity = precipIntensity
         self.precipProbability = precipProbability
+        self.precipType = precipType
         self.temperature = temperature
         self.apparentTemperature = apparentTemperature
         self.dewPoint = dewPoint
@@ -49,25 +50,20 @@ class CityWeather(object):
         self.ozone = ozone
         self.nearest_station = nearest_station
         self.units = units
-        self.alert_title = alert_title
-        self.alert_description = alert_description
-        self.alert_regions = alert_regions
-        self.alert_severity = alert_severity
-        self.alert_issued_time = alert_issued_time
-        self.alert_expires_time = alert_expires_time
-        self.forecast_summary=forecast_summary
+        self.forecast_summary = forecast_summary
 
     def printData(self):
         print("country ", self.country)
         print("timezone ", self.timezone)
         print("name ", self.name)
-        print("lon ", self.lon)
         print("lat ", self.lat)
+        print("lon ", self.lon)
         print("date_time ", self.date_time)
         print("weather ", self.weather)
         print("weather_icon ", self.weather_icon)
         print("precipIntensity ", self.precipIntensity)
         print("precipProbability ", self.precipProbability)
+        print("precipType ", self.precipType)
         print("temperature ", self.temperature)
         print("apparentTemperature ", self.apparentTemperature)
         print("dewPoint ", self.dewPoint)
@@ -82,12 +78,6 @@ class CityWeather(object):
         print("ozone ", self.ozone)
         print("nearest_station ", self.nearest_station)
         print("units ", self.units)
-        print("alert_title ", self.alert_title)
-        print("alert_description ", self.alert_description)
-        print("alert_regions ", self.alert_regions)
-        print("alert_severity ", self.alert_severity)
-        print("alert_issued_time ", self.alert_issued_time)
-        print("alert_expires_time ", self.alert_expires_time)
         print("forecast_summary ", self.forecast_summary)
 
 
@@ -101,42 +91,57 @@ def getApiValue(item, key1, key2=None):
             return item[key1][key2]
     except(KeyError):
         return None
-########################################################################################################################
-def getCityWeather(country, name, latitude, longitude, appid):
-    url = "https://api.darksky.net/forecast/{APPID}/{LATITUDE},{LONGITUDE}?exclude=minutely,hourly&units=si&lang=sl".format(
-        APPID=appid, LATITUDE=str(latitude), LONGITUDE=str(longitude))
 
+
+########################################################################################################################
+### function print log
+
+def printLog(text, value):
+    utcnow = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+    now = datetime.now().strftime('%H:%M:%S')
+    print("{0}({1}) / {2} / {3}".format(utcnow, now, text, value))
+
+
+########################################################################################################################
+def fetchCityWeather(country, name, latitude, longitude, appid):
+    url = "https://api.darksky.net/forecast/{APPID}/{LATITUDE},{LONGITUDE}?exclude=minutely,hourly&units=si".format(
+        APPID=appid, LATITUDE=str(latitude), LONGITUDE=str(longitude))
+    printLog("fatching data", name)
     response = requests.get(url)
     json_data = json.loads(response.text)
-    cityWeather = CityWeather(country, name, getApiValue(json_data, "latitude"),
-                getApiValue(json_data, "longitude"), getApiValue(json_data, "timezone"),
-                getApiValue(json_data, "currently", "time"), getApiValue(json_data, "currently", "summary"),
-                getApiValue(json_data, "currently", "icon"),
-                getApiValue(json_data, "currently", "precipIntensity"),
-                getApiValue(json_data, "currently", "precipProbability"),
-                getApiValue(json_data, "currently", "temperature"),
-                getApiValue(json_data, "currently", "apparentTemperature"),
-                getApiValue(json_data, "currently", "dewPoint"),
-                getApiValue(json_data, "currently", "humidity"),
-                getApiValue(json_data, "currently", "pressure"),
-                getApiValue(json_data, "currently", "windSpeed"),
-                getApiValue(json_data, "currently", "windGust"),
-                getApiValue(json_data, "currently", "windBearing"),
-                getApiValue(json_data, "currently", "cloudCover"),
-                getApiValue(json_data, "currently", "uvIndex"),
-                getApiValue(json_data, "currently", "visibility"),
-                getApiValue(json_data, "currently", "ozone"),
-                getApiValue(json_data, "flags", "nearest-station"), getApiValue(json_data, "flags", "units"),
-                getApiValue(json_data, "alerts", "title"), getApiValue(json_data, "alerts", "description"),
-                getApiValue(json_data, "alerts", "regions"), getApiValue(json_data, "alerts", "severity"),
-                getApiValue(json_data, "alerts", "time"), getApiValue(json_data, "alerts", "expires"),
-                getApiValue(json_data, "daily", "summary")
-                )
-    return  cityWeather
+    cityWeather = CityWeather(country, name,
+                              getApiValue(json_data, "latitude"),
+                              getApiValue(json_data, "longitude"),
+                              getApiValue(json_data, "timezone"),
+                              getApiValue(json_data, "currently", "time"),
+                              getApiValue(json_data, "currently", "summary"),
+                              getApiValue(json_data, "currently", "icon"),
+                              getApiValue(json_data, "currently", "precipIntensity"),
+                              getApiValue(json_data, "currently", "precipProbability"),
+                              getApiValue(json_data, "currently", "precipType"),
+                              getApiValue(json_data, "currently", "temperature"),
+                              getApiValue(json_data, "currently", "apparentTemperature"),
+                              getApiValue(json_data, "currently", "dewPoint"),
+                              getApiValue(json_data, "currently", "humidity"),
+                              getApiValue(json_data, "currently", "pressure"),
+                              getApiValue(json_data, "currently", "windSpeed"),
+                              getApiValue(json_data, "currently", "windGust"),
+                              getApiValue(json_data, "currently", "windBearing"),
+                              getApiValue(json_data, "currently", "cloudCover"),
+                              getApiValue(json_data, "currently", "uvIndex"),
+                              getApiValue(json_data, "currently", "visibility"),
+                              getApiValue(json_data, "currently", "ozone"),
+                              getApiValue(json_data, "flags", "nearest-station"),
+                              getApiValue(json_data, "flags", "units"),
+                              getApiValue(json_data, "daily", "summary")
+                              )
+    return cityWeather
+
+
 ########################################################################################################################
 # variables
 # disable db connection for testing mode
-db_NO_CONNECTION = True
+db_NO_CONNECTION = False
 
 ########################################################################################################################
 ##  CONFIG PARAMETERS - geting data from config file
@@ -154,11 +159,33 @@ for item in config_data["City"]:
     city_list.append(City(item["name"], item["country"], item["latitude"], item["longitude"]))
 
 ########################################################################################################################
-#cityWeather = list()
+cityWeather = list()
 
 for city in city_list:
     # get weather data
-    getCityWeather(city.country, city.name, city.latitude, city.longitude, appid).printData()
+    cityWeather.append(fetchCityWeather(city.country, city.name, city.latitude, city.longitude, appid))
 
+if db_NO_CONNECTION == False:
+    con = cx_Oracle.connect(connection_string)
+    cursor = con.cursor()
 
+for item in cityWeather:
+    if db_NO_CONNECTION == False:
+        printLog("inserting data", item.name)
+        cursor.callproc('ADD_CITY_WEATHER',
+                        [item.country, item.name, item.lat, item.lon, item.timezone, item.date_time, item.weather,
+                         item.weather_icon, item.precipIntensity,
+                         item.precipProbability, item.precipType, item.temperature, item.apparentTemperature,
+                         item.dewPoint, item.humidity, item.pressure, item.windSpeed, item.windGust,
+                         item.windBearing, item.cloudCover, item.uvIndex, item.visibility, item.ozone,
+                         item.nearest_station, item.units, item.forecast_summary])
+    else:
+        print(item.country, item.name, item.lat, item.lon, item.timezone, item.date_time, item.weather,
+              item.weather_icon, item.precipIntensity,
+              item.precipProbability, item.precipType, item.temperature, item.apparentTemperature,
+              item.dewPoint, item.humidity, item.pressure, item.windSpeed, item.windGust,
+              item.windBearing, item.cloudCover, item.uvIndex, item.visibility, item.ozone,
+              item.nearest_station, item.units, item.forecast_summary)
 
+if db_NO_CONNECTION == False:
+    con.close()
