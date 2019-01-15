@@ -2,7 +2,7 @@ import json
 import requests
 from datetime import datetime
 import cx_Oracle
-
+import sys
 
 ########################################################################################################################
 ### CITY CLASS
@@ -50,7 +50,7 @@ class CityWeather(object):
         self.ozone = ozone
         self.nearest_station = nearest_station
         self.units = units
-        self.forecast_summary = forecast_summary
+        self.forecast_summary =  forecast_summary if len(forecast_summary) <=150  else forecast_summary[1:150]
 
     def printData(self):
         print("country ", self.country)
@@ -212,7 +212,13 @@ def str_to_bool(s):
 
 ########################################################################################################################
 ##  CONFIG PARAMETERS - geting data from config file
-config_json = open("config.json").read()
+config_full_path = sys.argv[1]
+
+if config_full_path != None:
+    config_json = open(config_full_path).read()
+else:
+    config_json = open("config.json").read()
+
 config_data = json.loads(config_json)
 
 # DarkSky appid
