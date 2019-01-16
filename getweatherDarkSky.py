@@ -4,6 +4,7 @@ from datetime import datetime
 import cx_Oracle
 import sys
 
+
 ########################################################################################################################
 ### CITY CLASS
 class City:
@@ -50,7 +51,7 @@ class CityWeather(object):
         self.ozone = ozone
         self.nearest_station = nearest_station
         self.units = units
-        self.forecast_summary =  forecast_summary if len(forecast_summary) <=150  else forecast_summary[1:150]
+        self.forecast_summary = forecast_summary if len(forecast_summary) <= 150 else forecast_summary[1:150]
 
     def printData(self):
         print("country ", self.country)
@@ -97,49 +98,92 @@ class CityForecastDaily:
         self.country = country,
         self.lat = latitude,
         self.lon = longitude,
-        self.date_time = date_time,
+        self.date_time = datetime.utcfromtimestamp(date_time).strftime('%Y-%m-%d %H:%M:%S'),
         self.weather = weather,
         self.weather_icon = weather_icon,
-        self.sunriseTime = sunriseTime,
-        self.sunsetTime = sunsetTime,
+        self.sunriseTime = datetime.utcfromtimestamp(sunriseTime).strftime('%Y-%m-%d %H:%M:%S'),
+        self.sunsetTime = datetime.utcfromtimestamp(sunsetTime).strftime('%Y-%m-%d %H:%M:%S'),
         self.moonPhase = moonPhase,
         self.precipIntensity = precipIntensity,
         self.precipIntensityMax = precipIntensityMax,
-        self.precipIntensityMaxTime = precipIntensityMaxTime,
+        self.precipIntensityMaxTime = datetime.utcfromtimestamp(precipIntensityMaxTime).strftime('%Y-%m-%d %H:%M:%S'),
         self.precipProbability = precipProbability,
         self.precipAccumulation = precipAccumulation,
         self.precipType = precipType,
         self.temperatureHigh = temperatureHigh,
-        self.temperatureHighTime = temperatureHighTime,
+        self.temperatureHighTime = datetime.utcfromtimestamp(temperatureHighTime).strftime('%Y-%m-%d %H:%M:%S'),
         self.temperatureLow = temperatureLow,
-        self.temperatureLowTime = temperatureLowTime,
+        self.temperatureLowTime = datetime.utcfromtimestamp(temperatureLowTime).strftime('%Y-%m-%d %H:%M:%S'),
         self.apparentTemperatureHigh = apparentTemperatureHigh,
-        self.apparentTemperatureHighTime = apparentTemperatureHighTime,
+        self.apparentTemperatureHighTime = datetime.utcfromtimestamp(apparentTemperatureHighTime).strftime('%Y-%m-%d %H:%M:%S'),
         self.apparentTemperatureLow = apparentTemperatureLow,
-        self.apparentTemperatureLowTime = apparentTemperatureLowTime,
+        self.apparentTemperatureLowTime = datetime.utcfromtimestamp(apparentTemperatureLowTime).strftime('%Y-%m-%d %H:%M:%S'),
         self.dewPoint = dewPoint,
         self.humidity = humidity,
         self.pressure = pressure,
         self.windSpeed = windSpeed,
         self.windGust = windGust,
-        self.windGustTime = windGustTime,
+        self.windGustTime = datetime.utcfromtimestamp(windGustTime).strftime('%Y-%m-%d %H:%M:%S'),
         self.windBearing = windBearing,
         self.cloudCover = cloudCover,
         self.uvIndex = uvIndex,
-        self.uvIndexTime = uvIndexTime,
+        self.uvIndexTime = datetime.utcfromtimestamp(uvIndexTime).strftime('%Y-%m-%d %H:%M:%S'),
         self.visibility = visibility,
         self.ozone = ozone,
         self.temperatureMin = temperatureMin,
-        self.temperatureMinTime = temperatureMinTime,
+        self.temperatureMinTime = datetime.utcfromtimestamp(temperatureMinTime).strftime('%Y-%m-%d %H:%M:%S'),
         self.temperatureMax = temperatureMax,
-        self.temperatureMaxTime = temperatureMaxTime,
+        self.temperatureMaxTime = datetime.utcfromtimestamp(temperatureMaxTime).strftime('%Y-%m-%d %H:%M:%S'),
         self.apparentTemperatureMin = apparentTemperatureMin,
-        self.apparentTemperatureMinTime = apparentTemperatureMinTime,
+        self.apparentTemperatureMinTime = datetime.utcfromtimestamp(apparentTemperatureMinTime).strftime('%Y-%m-%d %H:%M:%S'),
         self.apparentTemperatureMax = apparentTemperatureMax,
-        self.apparentTemperatureMaxTime = apparentTemperatureMaxTime
+        self.apparentTemperatureMaxTime = datetime.utcfromtimestamp(apparentTemperatureMaxTime).strftime('%Y-%m-%d %H:%M:%S')
 
     def printData(self):
-        print("TODO")
+        print("name ", self.name)
+        print("country ", self.country)
+        print("lat ", self.lat)
+        print("lon ", self.lon)
+        print("date_time ", self.date_time)
+        print("weather ", self.weather)
+        print("weather_icon ", self.weather_icon)
+        print("sunriseTime ", self.sunriseTime)
+        print("sunsetTime ", self.sunsetTime)
+        print("moonPhase ", self.moonPhase)
+        print("precipIntensity ", self.precipIntensity)
+        print("precipIntensityMax ", self.precipIntensityMax)
+        print("precipIntensityMaxTime ", self.precipIntensityMaxTime)
+        print("precipProbability ", self.precipProbability)
+        print("precipAccumulation ", self.precipAccumulation)
+        print("precipType ", self.precipType)
+        print("temperatureHigh ", self.temperatureHigh)
+        print("temperatureHighTime ", self.temperatureHighTime)
+        print("temperatureLow ", self.temperatureLow)
+        print("temperatureLowTime ", self.temperatureLowTime)
+        print("apparentTemperatureHigh ", self.apparentTemperatureHigh)
+        print("apparentTemperatureHighTime ", self.apparentTemperatureHighTime)
+        print("apparentTemperatureLow ", self.apparentTemperatureLow)
+        print("apparentTemperatureLowTime ", self.apparentTemperatureLowTime)
+        print("dewPoint ", self.dewPoint)
+        print("humidity ", self.humidity)
+        print("pressure ", self.pressure)
+        print("windSpeed ", self.windSpeed)
+        print("windGust ", self.windGust)
+        print("windGustTime ", self.windGustTime)
+        print("windBearing ", self.windBearing)
+        print("cloudCover ", self.cloudCover)
+        print("uvIndex ", self.uvIndex)
+        print("uvIndexTime ", self.uvIndexTime)
+        print("visibility ", self.visibility)
+        print("ozone ", self.ozone)
+        print("temperatureMin ", self.temperatureMin)
+        print("temperatureMinTime ", self.temperatureMinTime)
+        print("temperatureMax ", self.temperatureMax)
+        print("temperatureMaxTime ", self.temperatureMaxTime)
+        print("apparentTemperatureMin ", self.apparentTemperatureMin)
+        print("apparentTemperatureMinTime ", self.apparentTemperatureMinTime)
+        print("apparentTemperatureMax ", self.apparentTemperatureMax)
+        print("apparentTemperatureMaxTime ", self.apparentTemperatureMaxTime)
 
 
 ########################################################################################################################
@@ -170,32 +214,80 @@ def fetchCityWeather(country, name, latitude, longitude, appid):
     printLog("fatching data", name)
     response = requests.get(url)
     json_data = json.loads(response.text)
-    cityWeather = CityWeather(country, name,
-                              getApiValue(json_data, "latitude"),
-                              getApiValue(json_data, "longitude"),
-                              getApiValue(json_data, "timezone"),
-                              getApiValue(json_data, "currently", "time"),
-                              getApiValue(json_data, "currently", "summary"),
-                              getApiValue(json_data, "currently", "icon"),
-                              getApiValue(json_data, "currently", "precipIntensity"),
-                              getApiValue(json_data, "currently", "precipProbability"),
-                              getApiValue(json_data, "currently", "precipType"),
-                              getApiValue(json_data, "currently", "temperature"),
-                              getApiValue(json_data, "currently", "apparentTemperature"),
-                              getApiValue(json_data, "currently", "dewPoint"),
-                              getApiValue(json_data, "currently", "humidity"),
-                              getApiValue(json_data, "currently", "pressure"),
-                              getApiValue(json_data, "currently", "windSpeed"),
-                              getApiValue(json_data, "currently", "windGust"),
-                              getApiValue(json_data, "currently", "windBearing"),
-                              getApiValue(json_data, "currently", "cloudCover"),
-                              getApiValue(json_data, "currently", "uvIndex"),
-                              getApiValue(json_data, "currently", "visibility"),
-                              getApiValue(json_data, "currently", "ozone"),
-                              getApiValue(json_data, "flags", "nearest-station"),
-                              getApiValue(json_data, "flags", "units"),
-                              getApiValue(json_data, "daily", "summary")
-                              )
+    cityForecast_list = list()
+    for item in json_data["daily"]["data"]:
+        cityForecast_list.append(CityForecastDaily  (name, country, latitude, longitude,
+                                 getApiValue(item, "time"),
+                                 getApiValue(item, "summary"),
+                                 getApiValue(item, "icon"),
+                                 getApiValue(item, "sunriseTime"),
+                                 getApiValue(item, "sunsetTime"),
+                                 getApiValue(item, "moonPhase"),
+                                 getApiValue(item, "precipIntensity"),
+                                 getApiValue(item, "precipIntensityMax"),
+                                 getApiValue(item, "precipIntensityMaxTime"),
+                                 getApiValue(item, "precipProbability"),
+                                 getApiValue(item, "precipAccumulation"),
+                                 getApiValue(item, "precipType"),
+                                 getApiValue(item, "temperatureHigh"),
+                                 getApiValue(item, "temperatureHighTime"),
+                                 getApiValue(item, "temperatureLow"),
+                                 getApiValue(item, "temperatureLowTime"),
+                                 getApiValue(item, "apparentTemperatureHigh"),
+                                 getApiValue(item, "apparentTemperatureHighTime"),
+                                 getApiValue(item, "apparentTemperatureLow"),
+                                 getApiValue(item, "apparentTemperatureLowTime"),
+                                 getApiValue(item, "dewPoint"),
+                                 getApiValue(item, "humidity"),
+                                 getApiValue(item, "pressure"),
+                                 getApiValue(item, "windSpeed"),
+                                 getApiValue(item, "windGust"),
+                                 getApiValue(item, "windGustTime"),
+                                 getApiValue(item, "windBearing"),
+                                 getApiValue(item, "cloudCover"),
+                                 getApiValue(item, "uvIndex"),
+                                 getApiValue(item, "uvIndexTime"),
+                                 getApiValue(item, "visibility"),
+                                 getApiValue(item, "ozone"),
+                                 getApiValue(item, "temperatureMin"),
+                                 getApiValue(item, "temperatureMinTime"),
+                                 getApiValue(item, "temperatureMax"),
+                                 getApiValue(item, "temperatureMaxTime"),
+                                 getApiValue(item, "apparentTemperatureMin"),
+                                 getApiValue(item, "apparentTemperatureMinTime"),
+                                 getApiValue(item, "apparentTemperatureMax"),
+                                 getApiValue(item, "apparentTemperatureMaxTime")))
+
+        for item in cityForecast_list:
+            item.printData()
+            print()
+
+        cityWeather = CityWeather(country, name,
+                                  getApiValue(json_data, "latitude"),
+                                  getApiValue(json_data, "longitude"),
+                                  getApiValue(json_data, "timezone"),
+                                  getApiValue(json_data, "currently", "time"),
+                                  getApiValue(json_data, "currently", "summary"),
+                                  getApiValue(json_data, "currently", "icon"),
+                                  getApiValue(json_data, "currently", "precipIntensity"),
+                                  getApiValue(json_data, "currently", "precipProbability"),
+                                  getApiValue(json_data, "currently", "precipType"),
+                                  getApiValue(json_data, "currently", "temperature"),
+                                  getApiValue(json_data, "currently", "apparentTemperature"),
+                                  getApiValue(json_data, "currently", "dewPoint"),
+                                  getApiValue(json_data, "currently", "humidity"),
+                                  getApiValue(json_data, "currently", "pressure"),
+                                  getApiValue(json_data, "currently", "windSpeed"),
+                                  getApiValue(json_data, "currently", "windGust"),
+                                  getApiValue(json_data, "currently", "windBearing"),
+                                  getApiValue(json_data, "currently", "cloudCover"),
+                                  getApiValue(json_data, "currently", "uvIndex"),
+                                  getApiValue(json_data, "currently", "visibility"),
+                                  getApiValue(json_data, "currently", "ozone"),
+                                  getApiValue(json_data, "flags", "nearest-station"),
+                                  getApiValue(json_data, "flags", "units"),
+                                  getApiValue(json_data, "daily", "summary")
+                                  )
     return cityWeather
 
 
@@ -212,7 +304,10 @@ def str_to_bool(s):
 
 ########################################################################################################################
 ##  CONFIG PARAMETERS - geting data from config file
-config_full_path = sys.argv[1]
+if len(sys.argv) > 1:
+    config_full_path = sys.argv[1]
+else:
+    config_full_path = None
 
 if config_full_path != None:
     config_json = open(config_full_path).read()
@@ -245,14 +340,14 @@ for city in city_list:
 # connect to db, when not in test mode
 con = None
 cursor = None
-if test_mode_no_db == False:
+if not test_mode_no_db:
     con = cx_Oracle.connect(connection_string)
     cursor = con.cursor()
 
 # loop through list of citys weather
 for item in cityWeather:
     # inserting into db
-    if test_mode_no_db == False:
+    if not test_mode_no_db:
         printLog("inserting data", item.name)
         cursor.callproc('ADD_CITY_WEATHER',
                         [item.country, item.name, item.lat, item.lon, item.timezone, item.date_time, item.weather,
@@ -271,5 +366,5 @@ for item in cityWeather:
               item.nearest_station, item.units, item.forecast_summary)
 
 # close db connection
-if test_mode_no_db == False:
+if not test_mode_no_db:
     con.close()
