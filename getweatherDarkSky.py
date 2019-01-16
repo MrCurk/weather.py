@@ -214,6 +214,8 @@ def fetchCityWeather(country, name, latitude, longitude, appid):
     printLog("fatching data", name)
     response = requests.get(url)
     json_data = json.loads(response.text)
+
+    #forecast list
     cityForecast_list = list()
     for item in json_data["daily"]["data"]:
         cityForecast_list.append(CityForecastDaily  (name, country, latitude, longitude,
