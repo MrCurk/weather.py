@@ -55,7 +55,6 @@ class CityWeather(object):
         self.forecast_summary = forecast_summary if len(forecast_summary) <= 150 else forecast_summary[1:150]
         self.cityForecast = cityForecast
 
-
     def printData(self):
         print("country ", self.country)
         print("timezone ", self.timezone)
@@ -87,10 +86,12 @@ class CityWeather(object):
             print()
             item_forecast.printData()
 
+
 ########################################################################################################################
 ### CITYFORECAST_DAILY CLASS
 class CityForecastDaily:
-    def __init__(self, name, country, latitude, longitude, date_time, weather, weather_icon, sunriseTime, sunsetTime,
+    def __init__(self, name, country, latitude, longitude, date_time, timezone, weather, weather_icon, sunriseTime,
+                 sunsetTime,
                  moonPhase, precipIntensity, precipIntensityMax, precipIntensityMaxTime, precipProbability,
                  precipAccumulation,
                  precipType, temperatureHigh, temperatureHighTime, temperatureLow, temperatureLowTime,
@@ -104,6 +105,7 @@ class CityForecastDaily:
         self.lat = latitude
         self.lon = longitude
         self.date_time = convertUnixTime2String(date_time)
+        self.timezone = timezone
         self.weather = weather
         self.weather_icon = weather_icon
         self.sunriseTime = convertUnixTime2String(sunriseTime)
@@ -150,6 +152,7 @@ class CityForecastDaily:
         print("lat ", self.lat)
         print("lon ", self.lon)
         print("date_time ", self.date_time)
+        print("time zone ", self.timezone)
         print("weather ", self.weather)
         print("weather_icon ", self.weather_icon)
         print("sunriseTime ", self.sunriseTime)
@@ -235,6 +238,7 @@ def fetchCityWeather(country, name, latitude, longitude, appid):
     for item in json_data["daily"]["data"]:
         cityForecast_list.append(CityForecastDaily(name, country, latitude, longitude,
                                                    getApiValue(item, "time"),
+                                                   getApiValue(json_data, "timezone"),
                                                    getApiValue(item, "summary"),
                                                    getApiValue(item, "icon"),
                                                    getApiValue(item, "sunriseTime"),
@@ -348,7 +352,7 @@ for item in config_data["City"]:
 cityWeather = list()
 # create a list of city with weather data
 for city in city_list:
-    # get weather data
+    # get weather data from web
     cityWeather.append(fetchCityWeather(city.country, city.name, city.latitude, city.longitude, appid))
 
 # connect to db, when not in test mode
@@ -371,8 +375,8 @@ for item in cityWeather:
                          item.windBearing, item.cloudCover, item.uvIndex, item.visibility, item.ozone,
                          item.nearest_station, item.units, item.forecast_summary])
         for forecast in item.cityForecast:
-            printLog("inserting data forecast ", item.name, "utc",forecast.date_time )
-            #TODO INSERT INTO DB
+            printLog("inserting data forecast ", item.name, "utc", forecast.date_time)
+            # TODO INSERT INTO DB
     # testing mode only print
     else:
         print(item.country, item.name, item.lat, item.lon, item.timezone, item.date_time, item.weather,
@@ -382,10 +386,9 @@ for item in cityWeather:
               item.windBearing, item.cloudCover, item.uvIndex, item.visibility, item.ozone,
               item.nearest_station, item.units, item.forecast_summary)
         for forecast in item.cityForecast:
-            printLog("inserting data forecast ", item.name, "utc",forecast.date_time )
+            printLog("inserting data forecast ", item.name, "utc", forecast.date_time)
             print(forecast.date_time, forecast.weather)
         print()
-
 
 # close db connection
 if not test_mode_no_db:
