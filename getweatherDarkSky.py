@@ -26,7 +26,7 @@ class CityWeather(object):
                  precipProbability, precipType, temperature, apparentTemperature, dewPoint, humidity, pressure,
                  windSpeed, windGust,
                  windBearing, cloudCover, uvIndex, visibility, ozone, nearest_station, units, forecast_summary,
-                 cityForecast=None):
+                 cityForecast=None, alert_list= None):
         self.country = country
         self.name = name
         self.lat = lat
@@ -54,6 +54,7 @@ class CityWeather(object):
         self.units = units
         self.forecast_summary = forecast_summary if len(forecast_summary) <= 150 else forecast_summary[1:150]
         self.cityForecast = cityForecast
+        self.alert_list = alert_list
 
     def printData(self):
         print("country ", self.country)
@@ -85,6 +86,32 @@ class CityWeather(object):
         for item_forecast in self.cityForecast:
             print()
             item_forecast.printData()
+        for item_alert in self.alert_list:
+            item_alert.printData()
+
+
+########################################################################################################################
+### CITYALERT CLASS
+class CityAlert:
+    def __init__(self, title, regions, severity, date_time, timezone, expires, description, uri):
+        self.title = title
+        self.regions = regions
+        self.severity = severity
+        self.date_time = convertUnixTime2String(date_time)
+        self.timezone = timezone
+        self.expires = convertUnixTime2String(expires)
+        self.description = description
+        self.uri = uri
+
+    def printData(self):
+        print("title ", self.title)
+        print("regions ", self.regions)
+        print("severity ", self.severity)
+        print("date_time ", self.date_time)
+        print("timezone ", self.timezone)
+        print("expires ", self.expires)
+        print("description ", self.description)
+        print("uri ", self.uri)
 
 
 ########################################################################################################################
@@ -233,12 +260,15 @@ def fetchCityWeather(country, name, latitude, longitude, appid):
     response = requests.get(url)
     json_data = json.loads(response.text)
 
+    #get time zone, needed in multiple parts
+    timeZone = getApiValue(json_data, "timezone")
+
     # forecast list
     cityForecast_list = list()
-    for item in json_data["daily"]["data"]:
+    for item in getApiValue(json_data,"daily","data"):
         cityForecast_list.append(CityForecastDaily(name, country, latitude, longitude,
                                                    getApiValue(item, "time"),
-                                                   getApiValue(json_data, "timezone"),
+                                                   timeZone,
                                                    getApiValue(item, "summary"),
                                                    getApiValue(item, "icon"),
                                                    getApiValue(item, "sunriseTime"),
@@ -278,6 +308,21 @@ def fetchCityWeather(country, name, latitude, longitude, appid):
                                                    getApiValue(item, "apparentTemperatureMinTime"),
                                                    getApiValue(item, "apparentTemperatureMax"),
                                                    getApiValue(item, "apparentTemperatureMaxTime")))
+    # alerts list
+    alert_list = list()
+    # loop through alerts
+    for alert in getApiValue(json_data, "alerts"):
+        title = getApiValue(alert,"title")
+        time = getApiValue(alert,"time")
+        severity = getApiValue(alert,"severity")
+        expires = getApiValue(alert,"expires")
+        description = getApiValue(alert,"description")
+        uri = getApiValue(alert,"uri")
+
+        # loop through regions in one alert
+        for region in getApiValue(alert,"regions"):
+            # create alert for each region
+            alert_list.append(CityAlert(title, region, severity, time, timeZone, expires, description, uri))
 
     cityWeather = CityWeather(country, name,
                               getApiValue(json_data, "latitude"),
@@ -304,7 +349,8 @@ def fetchCityWeather(country, name, latitude, longitude, appid):
                               getApiValue(json_data, "flags", "nearest-station"),
                               getApiValue(json_data, "flags", "units"),
                               getApiValue(json_data, "daily", "summary"),
-                              cityForecast_list
+                              cityForecast_list,
+                              alert_list
                               )
     return cityWeather
 
@@ -377,6 +423,10 @@ for item in cityWeather:
         for forecast in item.cityForecast:
             printLog("inserting data forecast ", item.name, "utc", forecast.date_time)
             # TODO INSERT INTO DB
+        for alert in item.alert_list:
+            printLog("inserting data alert ", item.name, "utc", alert.date_time)
+            # TODO INSERT ALERT INTO DB
+            # TODO INSERT CITY-REGINO INTO DB
     # testing mode only print
     else:
         print(item.country, item.name, item.lat, item.lon, item.timezone, item.date_time, item.weather,
@@ -388,6 +438,9 @@ for item in cityWeather:
         for forecast in item.cityForecast:
             printLog("inserting data forecast ", item.name, "utc", forecast.date_time)
             print(forecast.date_time, forecast.weather)
+        for alert in item.alert_list:
+            printLog("inserting data alert ", item.name, "utc", alert.date_time)
+            print(alert.date_time, alert.title)
         print()
 
 # close db connection
