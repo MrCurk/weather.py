@@ -93,9 +93,9 @@ class CityWeather(object):
 ########################################################################################################################
 ### CITYALERT CLASS
 class CityAlert:
-    def __init__(self, title, regions, severity, date_time, timezone, expires, description, uri):
+    def __init__(self, title, region, severity, date_time, timezone, expires, description, uri):
         self.title = title
-        self.regions = regions
+        self.region = region
         self.severity = severity
         self.date_time = convertUnixTime2String(date_time)
         self.timezone = timezone
@@ -105,7 +105,7 @@ class CityAlert:
 
     def printData(self):
         print("title ", self.title)
-        print("regions ", self.regions)
+        print("regions ", self.region)
         print("severity ", self.severity)
         print("date_time ", self.date_time)
         print("timezone ", self.timezone)
@@ -426,7 +426,9 @@ for item in cityWeather:
         for alert in item.alert_list:
             printLog("inserting data alert ", item.name, "utc", alert.date_time)
             # TODO INSERT ALERT INTO DB
-            # TODO INSERT CITY-REGINO INTO DB
+            # TODO test
+            # insert region2city relations
+            cursor.callproc('ADD_WEATHER_CITY2REGION',[alert.region,item.name, item.lat, item.lon])
     # testing mode only print
     else:
         print(item.country, item.name, item.lat, item.lon, item.timezone, item.date_time, item.weather,
@@ -441,6 +443,7 @@ for item in cityWeather:
         for alert in item.alert_list:
             printLog("inserting data alert ", item.name, "utc", alert.date_time)
             print(alert.date_time, alert.title)
+            print(alert.region,item.name, item.lat, item.lon)
         print()
 
 # close db connection
