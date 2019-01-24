@@ -26,7 +26,7 @@ class CityWeather(object):
                  precipProbability, precipType, temperature, apparentTemperature, dewPoint, humidity, pressure,
                  windSpeed, windGust,
                  windBearing, cloudCover, uvIndex, visibility, ozone, nearest_station, units, forecast_summary,
-                 cityForecast=None, alert_list= None):
+                 cityForecast=None, alert_list=None):
         self.country = country
         self.name = name
         self.lat = lat
@@ -126,11 +126,12 @@ class CityForecastDaily:
                  apparentTemperatureHighTime, apparentTemperatureLow, apparentTemperatureLowTime, dewPoint, humidity,
                  pressure, windSpeed, windGust, windGustTime, windBearing, cloudCover, uvIndex, uvIndexTime, visibility,
                  ozone, temperatureMin, temperatureMinTime, temperatureMax, temperatureMaxTime, apparentTemperatureMin,
-                 apparentTemperatureMinTime, apparentTemperatureMax, apparentTemperatureMaxTime):
+                 apparentTemperatureMinTime, apparentTemperatureMax, apparentTemperatureMaxTime, nearest_station,
+                 units):
         self.name = name
         self.country = country
-        self.lat = latitude
-        self.lon = longitude
+        self.latitude = latitude
+        self.longitude = longitude
         self.date_time = convertUnixTime2String(date_time)
         self.timezone = timezone
         self.weather = weather
@@ -172,12 +173,14 @@ class CityForecastDaily:
         self.apparentTemperatureMinTime = convertUnixTime2String(apparentTemperatureMinTime)
         self.apparentTemperatureMax = apparentTemperatureMax
         self.apparentTemperatureMaxTime = convertUnixTime2String(apparentTemperatureMaxTime)
+        self.nearest_station = nearest_station
+        self.units = units
 
     def printData(self):
         print("name ", self.name)
         print("country ", self.country)
-        print("lat ", self.lat)
-        print("lon ", self.lon)
+        print("lat ", self.latitude)
+        print("lon ", self.longitude)
         print("date_time ", self.date_time)
         print("time zone ", self.timezone)
         print("weather ", self.weather)
@@ -219,6 +222,8 @@ class CityForecastDaily:
         print("apparentTemperatureMinTime ", self.apparentTemperatureMinTime)
         print("apparentTemperatureMax ", self.apparentTemperatureMax)
         print("apparentTemperatureMaxTime ", self.apparentTemperatureMaxTime)
+        print("nearest_station ", self.nearest_station)
+        print("units ", self.units)
 
 
 ########################################################################################################################
@@ -260,12 +265,12 @@ def fetchCityWeather(country, name, latitude, longitude, appid):
     response = requests.get(url)
     json_data = json.loads(response.text)
 
-    #get time zone, needed in multiple parts
+    # get time zone, needed in multiple parts
     timeZone = getApiValue(json_data, "timezone")
 
     # forecast list
     cityForecast_list = list()
-    for item in getApiValue(json_data,"daily","data"):
+    for item in getApiValue(json_data, "daily", "data"):
         cityForecast_list.append(CityForecastDaily(name, country, latitude, longitude,
                                                    getApiValue(item, "time"),
                                                    timeZone,
@@ -307,20 +312,22 @@ def fetchCityWeather(country, name, latitude, longitude, appid):
                                                    getApiValue(item, "apparentTemperatureMin"),
                                                    getApiValue(item, "apparentTemperatureMinTime"),
                                                    getApiValue(item, "apparentTemperatureMax"),
-                                                   getApiValue(item, "apparentTemperatureMaxTime")))
+                                                   getApiValue(item, "apparentTemperatureMaxTime"),
+                                                   getApiValue(json_data, "flags", "nearest-station"),
+                                                   getApiValue(json_data, "flags", "units")))
     # alerts list
     alert_list = list()
     # loop through alerts
     for alert in getApiValue(json_data, "alerts"):
-        title = getApiValue(alert,"title")
-        time = getApiValue(alert,"time")
-        severity = getApiValue(alert,"severity")
-        expires = getApiValue(alert,"expires")
-        description = getApiValue(alert,"description")
-        uri = getApiValue(alert,"uri")
+        title = getApiValue(alert, "title")
+        time = getApiValue(alert, "time")
+        severity = getApiValue(alert, "severity")
+        expires = getApiValue(alert, "expires")
+        description = getApiValue(alert, "description")
+        uri = getApiValue(alert, "uri")
 
         # loop through regions in one alert
-        for region in getApiValue(alert,"regions"):
+        for region in getApiValue(alert, "regions"):
             # create alert for each region
             alert_list.append(CityAlert(title, region, severity, time, timeZone, expires, description, uri))
 
@@ -422,13 +429,34 @@ for item in cityWeather:
                          item.nearest_station, item.units, item.forecast_summary])
         for forecast in item.cityForecast:
             printLog("inserting data forecast ", item.name, "utc", forecast.date_time)
-            # TODO INSERT INTO DB
+            cursor.callproc('ADD_WEATHER_DAILY_FORECAST',
+                            [forecast.name, forecast.country, forecast.latitude, forecast.longitude, forecast.date_time,
+                             forecast.timezone, forecast.weather, forecast.weather_icon, forecast.sunriseTime,
+                             forecast.sunsetTime,
+                             forecast.moonPhase, forecast.precipIntensity, forecast.precipIntensityMax,
+                             forecast.precipIntensityMaxTime, forecast.precipProbability,
+                             forecast.precipAccumulation,
+                             forecast.precipType, forecast.temperatureHigh, forecast.temperatureHighTime,
+                             forecast.temperatureLow, forecast.temperatureLowTime,
+                             forecast.apparentTemperatureHigh,
+                             forecast.apparentTemperatureHighTime, forecast.apparentTemperatureLow,
+                             forecast.apparentTemperatureLowTime, forecast.dewPoint, forecast.humidity,
+                             forecast.pressure, forecast.windSpeed, forecast.windGust, forecast.windGustTime,
+                             forecast.windBearing, forecast.cloudCover, forecast.uvIndex, forecast.uvIndexTime,
+                             forecast.visibility,
+                             forecast.ozone, forecast.temperatureMin, forecast.temperatureMinTime,
+                             forecast.temperatureMax, forecast.temperatureMaxTime, forecast.apparentTemperatureMin,
+                             forecast.apparentTemperatureMinTime, forecast.apparentTemperatureMax,
+                             forecast.apparentTemperatureMaxTime, forecast.nearest_station, forecast.units])
         for alert in item.alert_list:
             printLog("inserting data alert ", item.name, "utc", alert.date_time)
-            # TODO INSERT ALERT INTO DB
-            # TODO test
+            # insert alerts relations
+            cursor.callproc('ADD_WEATHER_ALERT',
+                            [alert.title, alert.region, alert.severity, alert.date_time, alert.timezone, alert.expires,
+                             alert.description, alert.uri])
             # insert region2city relations
-            cursor.callproc('ADD_WEATHER_CITY2REGION',[alert.region,item.name, item.lat, item.lon])
+            printLog("inserting region2city relations ", item.name, "utc", alert.date_time)
+            cursor.callproc('ADD_WEATHER_CITY2REGION', [alert.region, item.name, item.lat, item.lon])
     # testing mode only print
     else:
         print(item.country, item.name, item.lat, item.lon, item.timezone, item.date_time, item.weather,
@@ -443,7 +471,7 @@ for item in cityWeather:
         for alert in item.alert_list:
             printLog("inserting data alert ", item.name, "utc", alert.date_time)
             print(alert.date_time, alert.title)
-            print(alert.region,item.name, item.lat, item.lon)
+            print(alert.region, item.name, item.lat, item.lon)
         print()
 
 # close db connection
