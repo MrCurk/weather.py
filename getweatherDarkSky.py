@@ -6,11 +6,13 @@ import sys
 
 
 ########################################################################################################################
+# CLASS
+########################################################################################################################
 ### CITY CLASS
 class City:
     def __init__(self, name, country, latitude, longitude):
-        self.name = name
-        self.country = country
+        self.name = subString(name, 16)
+        self.country = subString(country, 2)
         self.latitude = latitude
         self.longitude = longitude
 
@@ -33,11 +35,11 @@ class CityWeather(object):
         self.lon = lon
         self.timezone = timezone
         self.date_time = convertUnixTime2String(date_time)
-        self.weather = weather
-        self.weather_icon = weather_icon
+        self.weather = subString(weather, 50)
+        self.weather_icon = subString(weather_icon, 20)
         self.precipIntensity = precipIntensity
         self.precipProbability = precipProbability
-        self.precipType = precipType
+        self.precipType = subString(precipType, 20)
         self.temperature = temperature
         self.apparentTemperature = apparentTemperature
         self.dewPoint = dewPoint
@@ -52,7 +54,7 @@ class CityWeather(object):
         self.ozone = ozone
         self.nearest_station = nearest_station
         self.units = units
-        self.forecast_summary = forecast_summary if len(forecast_summary) <= 150 else forecast_summary[1:150]
+        self.forecast_summary = subString(forecast_summary, 150)
         self.cityForecast = cityForecast
         self.alert_list = alert_list
 
@@ -84,7 +86,6 @@ class CityWeather(object):
         print("units ", self.units)
         print("forecast_summary ", self.forecast_summary)
         for item_forecast in self.cityForecast:
-            print()
             item_forecast.printData()
         for item_alert in self.alert_list:
             item_alert.printData()
@@ -94,14 +95,14 @@ class CityWeather(object):
 ### CITYALERT CLASS
 class CityAlert:
     def __init__(self, title, region, severity, date_time, timezone, expires, description, uri):
-        self.title = title
-        self.region = region
+        self.title = subString(title, 100)
+        self.region = subString(region, 60)
         self.severity = severity
         self.date_time = convertUnixTime2String(date_time)
         self.timezone = timezone
         self.expires = convertUnixTime2String(expires)
-        self.description = description
-        self.uri = uri
+        self.description = subString(description, 250)
+        self.uri = subString(uri, 200)
 
     def printData(self):
         print("title ", self.title)
@@ -134,8 +135,8 @@ class CityForecastDaily:
         self.longitude = longitude
         self.date_time = convertUnixTime2String(date_time)
         self.timezone = timezone
-        self.weather = weather
-        self.weather_icon = weather_icon
+        self.weather = subString(weather, 200)
+        self.weather_icon = subString(weather_icon, 20)
         self.sunriseTime = convertUnixTime2String(sunriseTime)
         self.sunsetTime = convertUnixTime2String(sunsetTime)
         self.moonPhase = moonPhase
@@ -144,7 +145,7 @@ class CityForecastDaily:
         self.precipIntensityMaxTime = convertUnixTime2String(precipIntensityMaxTime)
         self.precipProbability = precipProbability
         self.precipAccumulation = precipAccumulation
-        self.precipType = precipType
+        self.precipType = subString(precipType, 20)
         self.temperatureHigh = temperatureHigh
         self.temperatureHighTime = convertUnixTime2String(temperatureHighTime)
         self.temperatureLow = temperatureLow
@@ -227,6 +228,8 @@ class CityForecastDaily:
 
 
 ########################################################################################################################
+# FUNCTION
+########################################################################################################################
 ### function try/catch if obj hasn't exist
 def getApiValue(item, key1, key2=None):
     try:
@@ -239,11 +242,37 @@ def getApiValue(item, key1, key2=None):
 
 
 ########################################################################################################################
+### function cut string if it is longer then specific length
+def subString(string, length):
+    substring = None
+    if string is not None:
+        if len(string) <= length:
+            substring = string
+        else:
+            if length >= 5:
+                substring = string[0:(length - 3)] + "..."
+            else:
+                substring = string[0:length]
+
+    return substring
+
+
+########################################################################################################################
 ### function print log
 def printLog(text, value, value1=None, value2=None, value3=None):
     utcnow = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     now = datetime.now().strftime('%H:%M:%S')
-    print("{0}({1}) / {2} / {3} {4} {5} {6}".format(utcnow, now, text, value, value1, value2, value3))
+    string4print = None
+    if value1 is None:
+        string4print = "{0}({1}) / {2} / {3}".format(utcnow, now, text, value)
+    elif value2 is None:
+        string4print = "{0}({1}) / {2} / {3} / {4}".format(utcnow, now, text, value, value1)
+    elif value3 is None:
+        string4print = "{0}({1}) / {2} / {3} / {4} / {5}".format(utcnow, now, text, value, value1, value2)
+    else:
+        string4print = "{0}({1}) / {2} / {3} / {4} / {5} / {6}".format(utcnow, now, text, value, value1, value2, value3)
+
+    print(string4print)
 
 
 ########################################################################################################################
@@ -374,12 +403,16 @@ def str_to_bool(s):
 
 
 ########################################################################################################################
+# PROGRAM
+########################################################################################################################
 ##  CONFIG PARAMETERS - geting data from config file
+## full path of config file
 if len(sys.argv) > 1:
     config_full_path = sys.argv[1]
 else:
     config_full_path = None
 
+## read config file
 if config_full_path != None:
     config_json = open(config_full_path).read()
 else:
@@ -402,8 +435,8 @@ for item in config_data["City"]:
     city_list.append(City(item["name"], item["country"], item["latitude"], item["longitude"]))
 
 ########################################################################################################################
-cityWeather = list()
 # create a list of city with weather data
+cityWeather = list()
 for city in city_list:
     # get weather data from web
     cityWeather.append(fetchCityWeather(city.country, city.name, city.latitude, city.longitude, appid))
@@ -450,13 +483,14 @@ for item in cityWeather:
                              forecast.apparentTemperatureMaxTime, forecast.nearest_station, forecast.units])
         for alert in item.alert_list:
             printLog("inserting data alert ", item.name, "utc", alert.date_time)
-            # insert alerts relations
+            # insert alerts
             cursor.callproc('ADD_WEATHER_ALERT',
                             [alert.title, alert.region, alert.severity, alert.date_time, alert.timezone, alert.expires,
                              alert.description, alert.uri])
             # insert region2city relations
             printLog("inserting region2city relations ", item.name, "utc", alert.date_time)
             cursor.callproc('ADD_WEATHER_CITY2REGION', [alert.region, item.name, item.lat, item.lon])
+
     # testing mode only print
     else:
         print(item.country, item.name, item.lat, item.lon, item.timezone, item.date_time, item.weather,
