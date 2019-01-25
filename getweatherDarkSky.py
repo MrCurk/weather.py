@@ -259,11 +259,13 @@ def subString(string, length):
 
 ########################################################################################################################
 ### function print log
-def printLog(text, value, value1=None, value2=None, value3=None):
+def printLog(text, value=None, value1=None, value2=None, value3=None):
     utcnow = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     now = datetime.now().strftime('%H:%M:%S')
     string4print = None
-    if value1 is None:
+    if value is None:
+        string4print = "{0}({1}) / {2}".format(utcnow, now, text)
+    elif value1 is None:
         string4print = "{0}({1}) / {2} / {3}".format(utcnow, now, text, value)
     elif value2 is None:
         string4print = "{0}({1}) / {2} / {3} / {4}".format(utcnow, now, text, value, value1)
@@ -299,66 +301,68 @@ def fetchCityWeather(country, name, latitude, longitude, appid):
 
     # forecast list
     cityForecast_list = list()
-    for item in getApiValue(json_data, "daily", "data"):
-        cityForecast_list.append(CityForecastDaily(name, country, latitude, longitude,
-                                                   getApiValue(item, "time"),
-                                                   timeZone,
-                                                   getApiValue(item, "summary"),
-                                                   getApiValue(item, "icon"),
-                                                   getApiValue(item, "sunriseTime"),
-                                                   getApiValue(item, "sunsetTime"),
-                                                   getApiValue(item, "moonPhase"),
-                                                   getApiValue(item, "precipIntensity"),
-                                                   getApiValue(item, "precipIntensityMax"),
-                                                   getApiValue(item, "precipIntensityMaxTime"),
-                                                   getApiValue(item, "precipProbability"),
-                                                   getApiValue(item, "precipAccumulation"),
-                                                   getApiValue(item, "precipType"),
-                                                   getApiValue(item, "temperatureHigh"),
-                                                   getApiValue(item, "temperatureHighTime"),
-                                                   getApiValue(item, "temperatureLow"),
-                                                   getApiValue(item, "temperatureLowTime"),
-                                                   getApiValue(item, "apparentTemperatureHigh"),
-                                                   getApiValue(item, "apparentTemperatureHighTime"),
-                                                   getApiValue(item, "apparentTemperatureLow"),
-                                                   getApiValue(item, "apparentTemperatureLowTime"),
-                                                   getApiValue(item, "dewPoint"),
-                                                   getApiValue(item, "humidity"),
-                                                   getApiValue(item, "pressure"),
-                                                   getApiValue(item, "windSpeed"),
-                                                   getApiValue(item, "windGust"),
-                                                   getApiValue(item, "windGustTime"),
-                                                   getApiValue(item, "windBearing"),
-                                                   getApiValue(item, "cloudCover"),
-                                                   getApiValue(item, "uvIndex"),
-                                                   getApiValue(item, "uvIndexTime"),
-                                                   getApiValue(item, "visibility"),
-                                                   getApiValue(item, "ozone"),
-                                                   getApiValue(item, "temperatureMin"),
-                                                   getApiValue(item, "temperatureMinTime"),
-                                                   getApiValue(item, "temperatureMax"),
-                                                   getApiValue(item, "temperatureMaxTime"),
-                                                   getApiValue(item, "apparentTemperatureMin"),
-                                                   getApiValue(item, "apparentTemperatureMinTime"),
-                                                   getApiValue(item, "apparentTemperatureMax"),
-                                                   getApiValue(item, "apparentTemperatureMaxTime"),
-                                                   getApiValue(json_data, "flags", "nearest-station"),
-                                                   getApiValue(json_data, "flags", "units")))
+    if getApiValue(json_data, "daily", "data") is not None:
+        for item in getApiValue(json_data, "daily", "data"):
+            cityForecast_list.append(CityForecastDaily(name, country, latitude, longitude,
+                                                       getApiValue(item, "time"),
+                                                       timeZone,
+                                                       getApiValue(item, "summary"),
+                                                       getApiValue(item, "icon"),
+                                                       getApiValue(item, "sunriseTime"),
+                                                       getApiValue(item, "sunsetTime"),
+                                                       getApiValue(item, "moonPhase"),
+                                                       getApiValue(item, "precipIntensity"),
+                                                       getApiValue(item, "precipIntensityMax"),
+                                                       getApiValue(item, "precipIntensityMaxTime"),
+                                                       getApiValue(item, "precipProbability"),
+                                                       getApiValue(item, "precipAccumulation"),
+                                                       getApiValue(item, "precipType"),
+                                                       getApiValue(item, "temperatureHigh"),
+                                                       getApiValue(item, "temperatureHighTime"),
+                                                       getApiValue(item, "temperatureLow"),
+                                                       getApiValue(item, "temperatureLowTime"),
+                                                       getApiValue(item, "apparentTemperatureHigh"),
+                                                       getApiValue(item, "apparentTemperatureHighTime"),
+                                                       getApiValue(item, "apparentTemperatureLow"),
+                                                       getApiValue(item, "apparentTemperatureLowTime"),
+                                                       getApiValue(item, "dewPoint"),
+                                                       getApiValue(item, "humidity"),
+                                                       getApiValue(item, "pressure"),
+                                                       getApiValue(item, "windSpeed"),
+                                                       getApiValue(item, "windGust"),
+                                                       getApiValue(item, "windGustTime"),
+                                                       getApiValue(item, "windBearing"),
+                                                       getApiValue(item, "cloudCover"),
+                                                       getApiValue(item, "uvIndex"),
+                                                       getApiValue(item, "uvIndexTime"),
+                                                       getApiValue(item, "visibility"),
+                                                       getApiValue(item, "ozone"),
+                                                       getApiValue(item, "temperatureMin"),
+                                                       getApiValue(item, "temperatureMinTime"),
+                                                       getApiValue(item, "temperatureMax"),
+                                                       getApiValue(item, "temperatureMaxTime"),
+                                                       getApiValue(item, "apparentTemperatureMin"),
+                                                       getApiValue(item, "apparentTemperatureMinTime"),
+                                                       getApiValue(item, "apparentTemperatureMax"),
+                                                       getApiValue(item, "apparentTemperatureMaxTime"),
+                                                       getApiValue(json_data, "flags", "nearest-station"),
+                                                       getApiValue(json_data, "flags", "units")))
     # alerts list
     alert_list = list()
     # loop through alerts
-    for alert in getApiValue(json_data, "alerts"):
-        title = getApiValue(alert, "title")
-        time = getApiValue(alert, "time")
-        severity = getApiValue(alert, "severity")
-        expires = getApiValue(alert, "expires")
-        description = getApiValue(alert, "description")
-        uri = getApiValue(alert, "uri")
+    if getApiValue(json_data, "alerts") is not None:
+        for alert in getApiValue(json_data, "alerts"):
+            title = getApiValue(alert, "title")
+            time = getApiValue(alert, "time")
+            severity = getApiValue(alert, "severity")
+            expires = getApiValue(alert, "expires")
+            description = getApiValue(alert, "description")
+            uri = getApiValue(alert, "uri")
 
-        # loop through regions in one alert
-        for region in getApiValue(alert, "regions"):
-            # create alert for each region
-            alert_list.append(CityAlert(title, region, severity, time, timeZone, expires, description, uri))
+            # loop through regions in one alert
+            for region in getApiValue(alert, "regions"):
+                # create alert for each region
+                alert_list.append(CityAlert(title, region, severity, time, timeZone, expires, description, uri))
 
     cityWeather = CityWeather(country, name,
                               getApiValue(json_data, "latitude"),
@@ -452,7 +456,7 @@ if not test_mode_no_db:
 for item in cityWeather:
     # inserting into db
     if not test_mode_no_db:
-        printLog("inserting data current weather ", item.name)
+        printLog("inserting data weather current", item.name)
         cursor.callproc('ADD_CITY_WEATHER',
                         [item.country, item.name, item.lat, item.lon, item.timezone, item.date_time, item.weather,
                          item.weather_icon, item.precipIntensity,
@@ -460,6 +464,9 @@ for item in cityWeather:
                          item.dewPoint, item.humidity, item.pressure, item.windSpeed, item.windGust,
                          item.windBearing, item.cloudCover, item.uvIndex, item.visibility, item.ozone,
                          item.nearest_station, item.units, item.forecast_summary])
+        print()
+
+        # inserting forecast
         for forecast in item.cityForecast:
             printLog("inserting data forecast ", item.name, "utc", forecast.date_time)
             cursor.callproc('ADD_WEATHER_DAILY_FORECAST',
@@ -481,6 +488,10 @@ for item in cityWeather:
                              forecast.temperatureMax, forecast.temperatureMaxTime, forecast.apparentTemperatureMin,
                              forecast.apparentTemperatureMinTime, forecast.apparentTemperatureMax,
                              forecast.apparentTemperatureMaxTime, forecast.nearest_station, forecast.units])
+        if len(item.cityForecast) > 0:
+            printLog("End *****************")
+
+        # inserting alerts
         for alert in item.alert_list:
             printLog("inserting data alert ", item.name, "utc", alert.date_time)
             # insert alerts
@@ -490,7 +501,12 @@ for item in cityWeather:
             # insert region2city relations
             printLog("inserting region2city relations ", item.name, "utc", alert.date_time)
             cursor.callproc('ADD_WEATHER_CITY2REGION', [alert.region, item.name, item.lat, item.lon])
+        if len(item.alert_list) > 0:
+            printLog("End *****************")
 
+        # end for one city
+        printLog("End *****************", item.name)
+        print()
     # testing mode only print
     else:
         print(item.country, item.name, item.lat, item.lon, item.timezone, item.date_time, item.weather,
