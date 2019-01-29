@@ -1,13 +1,16 @@
 {
   "APPID_OpenWeather": "xxx",
   "APPID_DarkSky": "xxx",
-  "url_DarkSky": "https://api.darksky.net/forecast/xxx/46.5176,13.7516?exclude=minutely,hourly&units=si&lang=sl",
   "APPID_WordWeatherOnline": "xxx",
-  "url_WordWeatherOnline":"https://api.worldweatheronline.com/premium/v1/weather.ashx?key=xxx&q=nova gorica&format=json&num_of_days=5&mca=no&tp=24&showlocaltime=yes",
+  "PROXY_TYPE": "https",
+  "PROXY": "xxx",
+  "PROXY_PORT": "xxx",
+  "PROXY_USERNAME": "",
+  "PROXY_PASSWORD": "",
   "DB_TNS": "xxx",
   "DB_USERNAME": "xxx",
   "DB_PASSWORD": "xxx",
-  "test_mode_no_db": "true",
+  "test_mode_no_db": "false",
   "City": [
     {
       "country": "SI",
@@ -120,6 +123,13 @@
       "id_OW": 6542281,
       "latitude": 45.4067,
       "longitude": 11.8763
+    },
+    {
+      "country": "IT",
+      "name": "Venezia",
+      "id_OW": 6542281,
+      "latitude": 45.4388,
+      "longitude": 12.3177
     }
   ]
 }
