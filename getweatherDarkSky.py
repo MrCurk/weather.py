@@ -368,7 +368,7 @@ def fetchCityWeather(country, name, latitude, longitude, appid):
     cityWeather = CityWeather(country, name,
                               getApiValue(json_data, "latitude"),
                               getApiValue(json_data, "longitude"),
-                              getApiValue(json_data, "timezone"),
+                              timeZone,
                               getApiValue(json_data, "currently", "time"),
                               getApiValue(json_data, "currently", "summary"),
                               getApiValue(json_data, "currently", "icon"),
