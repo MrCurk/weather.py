@@ -3,6 +3,7 @@ import requests
 from datetime import datetime
 import cx_Oracle
 import sys
+import os
 
 
 ########################################################################################################################
@@ -292,6 +293,7 @@ def convertUnixTime2String(unixTime):
 def fetchCityWeather(country, name, latitude, longitude, appid):
     url = "https://api.darksky.net/forecast/{APPID}/{LATITUDE},{LONGITUDE}?exclude=minutely,hourly&units=si".format(
         APPID=appid, LATITUDE=str(latitude), LONGITUDE=str(longitude))
+
     printLog("fatching data", name)
     response = requests.get(url)
     json_data = json.loads(response.text)
@@ -423,6 +425,25 @@ else:
     config_json = open("config.json").read()
 
 config_data = json.loads(config_json)
+
+## config proxy
+# get proxy data from config
+proxyType = config_data["PROXY_TYPE"]
+proxy = config_data["PROXY"]
+proxyPort = config_data["PROXY_PORT"]
+proxyUsername = config_data["PROXY_USERNAME"]
+proxyPassword = config_data["PROXY_PASSWORD"]
+proxyString = None
+# set proxy string
+if len(proxyUsername) == 0 and len(proxyPassword) == 0:
+    proxyString = proxyType + "://" + proxy + ":" + proxyPort
+else:
+    proxyString = proxyType + "://" + proxyUsername + ":" + proxyPassword + "@" + proxy + ":" + proxyPort
+# set proxy
+os.environ['http_proxy'] = proxyString
+os.environ['HTTP_PROXY'] = proxyString
+os.environ['https_proxy'] = proxyString
+os.environ['HTTPS_PROXY'] = proxyString
 
 # DarkSky appid
 appid = config_data["APPID_DarkSky"]
