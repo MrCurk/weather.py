@@ -5,7 +5,6 @@ import cx_Oracle
 import sys
 import os
 
-
 ########################################################################################################################
 # CLASS
 ########################################################################################################################
@@ -452,7 +451,12 @@ appid = config_data["APPID_DarkSky"]
 test_mode_no_db = str_to_bool(config_data["test_mode_no_db"])
 
 # connection string
-connection_string = config_data["DB_USERNAME"] + "/" + config_data["DB_PASSWORD"] + "@" + config_data["DB_TNS"]
+dbTns = config_data["DB_TNS"]
+connection_string = None
+if len(dbTns) == 0:
+    connection_string = config_data["DB_USERNAME"] + "/" + config_data["DB_PASSWORD"]
+else:
+    connection_string = config_data["DB_USERNAME"] + "/" + config_data["DB_PASSWORD"] + "@" + config_data["DB_TNS"]
 
 # list of cities
 city_list = list()
