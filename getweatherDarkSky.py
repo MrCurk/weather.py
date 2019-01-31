@@ -5,6 +5,7 @@ import cx_Oracle
 import sys
 import os
 
+
 ########################################################################################################################
 # CLASS
 ########################################################################################################################
@@ -28,7 +29,7 @@ class CityWeather(object):
                  precipProbability, precipType, temperature, apparentTemperature, dewPoint, humidity, pressure,
                  windSpeed, windGust,
                  windBearing, cloudCover, uvIndex, visibility, ozone, nearest_station, units, forecast_summary,
-                 cityForecast=None, alert_list=None):
+                 nearestStormBearing, nearestStormDistance, precipIntensityError, cityForecast=None, alert_list=None):
         self.country = country
         self.name = name
         self.lat = lat
@@ -55,6 +56,9 @@ class CityWeather(object):
         self.nearest_station = nearest_station
         self.units = units
         self.forecast_summary = subString(forecast_summary, 150)
+        self.nearestStormBearing = nearestStormBearing
+        self.nearestStormDistance = nearestStormDistance
+        self.precipIntensityError = precipIntensityError
         self.cityForecast = cityForecast
         self.alert_list = alert_list
 
@@ -85,6 +89,9 @@ class CityWeather(object):
         print("nearest_station ", self.nearest_station)
         print("units ", self.units)
         print("forecast_summary ", self.forecast_summary)
+        print("nearestStormBearing ", self.nearestStormBearing)
+        print("nearestStormDistance ", self.nearestStormDistance)
+        print("precipIntensityError ", self.precipIntensityError)
         for item_forecast in self.cityForecast:
             item_forecast.printData()
         for item_alert in self.alert_list:
@@ -126,8 +133,7 @@ class CityForecastDaily:
                  apparentTemperatureHigh,
                  apparentTemperatureHighTime, apparentTemperatureLow, apparentTemperatureLowTime, dewPoint, humidity,
                  pressure, windSpeed, windGust, windGustTime, windBearing, cloudCover, uvIndex, uvIndexTime, visibility,
-                 ozone, nearest_station,
-                 units):
+                 ozone, precipIntensityError, nearest_station, units):
         self.name = name
         self.country = country
         self.latitude = latitude
@@ -165,6 +171,7 @@ class CityForecastDaily:
         self.uvIndexTime = convertUnixTime2String(uvIndexTime)
         self.visibility = visibility
         self.ozone = ozone
+        self.precipIntensityError = precipIntensityError
         self.nearest_station = nearest_station
         self.units = units
 
@@ -206,6 +213,7 @@ class CityForecastDaily:
         print("uvIndexTime ", self.uvIndexTime)
         print("visibility ", self.visibility)
         print("ozone ", self.ozone)
+        print("precipIntensityError ", self.precipIntensityError)
         print("nearest_station ", self.nearest_station)
         print("units ", self.units)
 
@@ -321,6 +329,7 @@ def fetchCityWeather(country, name, latitude, longitude, appid):
                                                        getApiValue(item, "uvIndexTime"),
                                                        getApiValue(item, "visibility"),
                                                        getApiValue(item, "ozone"),
+                                                       getApiValue(item, "precipIntensityError"),
                                                        getApiValue(json_data, "flags", "nearest-station"),
                                                        getApiValue(json_data, "flags", "units")))
     # alerts list
@@ -365,6 +374,9 @@ def fetchCityWeather(country, name, latitude, longitude, appid):
                               getApiValue(json_data, "flags", "nearest-station"),
                               getApiValue(json_data, "flags", "units"),
                               getApiValue(json_data, "daily", "summary"),
+                              getApiValue(json_data, "currently", "nearestStormBearing"),
+                              getApiValue(json_data, "currently", "nearestStormDistance"),
+                              getApiValue(json_data, "currently", "precipIntensityError"),
                               cityForecast_list,
                               alert_list
                               )
@@ -409,15 +421,16 @@ proxyUsername = config_data["PROXY_USERNAME"]
 proxyPassword = config_data["PROXY_PASSWORD"]
 proxyString = None
 # set proxy string
-if len(proxyUsername) == 0 and len(proxyPassword) == 0:
-    proxyString = proxyType + "://" + proxy + ":" + proxyPort
-else:
-    proxyString = proxyType + "://" + proxyUsername + ":" + proxyPassword + "@" + proxy + ":" + proxyPort
-# set proxy
-os.environ['http_proxy'] = proxyString
-os.environ['HTTP_PROXY'] = proxyString
-os.environ['https_proxy'] = proxyString
-os.environ['HTTPS_PROXY'] = proxyString
+if len(proxyType) > 0:
+    if len(proxyUsername) == 0 and len(proxyPassword) == 0:
+        proxyString = proxyType + "://" + proxy + ":" + proxyPort
+    else:
+        proxyString = proxyType + "://" + proxyUsername + ":" + proxyPassword + "@" + proxy + ":" + proxyPort
+    # set proxy
+    os.environ['http_proxy'] = proxyString
+    os.environ['HTTP_PROXY'] = proxyString
+    os.environ['https_proxy'] = proxyString
+    os.environ['HTTPS_PROXY'] = proxyString
 
 # DarkSky appid
 appid = config_data["APPID_DarkSky"]
@@ -463,7 +476,9 @@ for item in cityWeather:
                          item.precipProbability, item.precipType, item.temperature, item.apparentTemperature,
                          item.dewPoint, item.humidity, item.pressure, item.windSpeed, item.windGust,
                          item.windBearing, item.cloudCover, item.uvIndex, item.visibility, item.ozone,
-                         item.nearest_station, item.units, item.forecast_summary])
+                         item.nearest_station, item.units, item.forecast_summary
+                         # TODO , item.nearestStormBearing, item.nearestStormDistance , item.precipIntensityError
+                         ])
         print()
 
         # inserting forecast
@@ -483,8 +498,8 @@ for item in cityWeather:
                              forecast.apparentTemperatureLowTime, forecast.dewPoint, forecast.humidity,
                              forecast.pressure, forecast.windSpeed, forecast.windGust, forecast.windGustTime,
                              forecast.windBearing, forecast.cloudCover, forecast.uvIndex, forecast.uvIndexTime,
-                             forecast.visibility,
-                             forecast.ozone, forecast.nearest_station, forecast.units])
+                             forecast.visibility, forecast.ozone, #TODO forecast.precipIntensityError
+                             forecast.nearest_station, forecast.units])
         if len(item.cityForecast) > 0:
             printLog("End *****************")
 
@@ -511,9 +526,11 @@ for item in cityWeather:
               item.precipProbability, item.precipType, item.temperature, item.apparentTemperature,
               item.dewPoint, item.humidity, item.pressure, item.windSpeed, item.windGust,
               item.windBearing, item.cloudCover, item.uvIndex, item.visibility, item.ozone,
-              item.nearest_station, item.units, item.forecast_summary)
+              item.nearest_station, item.units, item.forecast_summary, item.nearestStormBearing,
+              item.nearestStormDistance, item.precipIntensityError
+              )
         for forecast in item.cityForecast:
-            printLog("inserting data forecast ", item.name, "utc", forecast.date_time)
+            printLog("inserting data forecast ", item.name, "utc", forecast.date_time, forecast.precipIntensityError)
             print(forecast.date_time, forecast.weather)
         for alert in item.alert_list:
             printLog("inserting data alert ", item.name, "utc", alert.date_time)
