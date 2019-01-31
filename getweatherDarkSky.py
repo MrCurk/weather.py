@@ -126,8 +126,7 @@ class CityForecastDaily:
                  apparentTemperatureHigh,
                  apparentTemperatureHighTime, apparentTemperatureLow, apparentTemperatureLowTime, dewPoint, humidity,
                  pressure, windSpeed, windGust, windGustTime, windBearing, cloudCover, uvIndex, uvIndexTime, visibility,
-                 ozone, temperatureMin, temperatureMinTime, temperatureMax, temperatureMaxTime, apparentTemperatureMin,
-                 apparentTemperatureMinTime, apparentTemperatureMax, apparentTemperatureMaxTime, nearest_station,
+                 ozone, nearest_station,
                  units):
         self.name = name
         self.country = country
@@ -166,14 +165,6 @@ class CityForecastDaily:
         self.uvIndexTime = convertUnixTime2String(uvIndexTime)
         self.visibility = visibility
         self.ozone = ozone
-        self.temperatureMin = temperatureMin
-        self.temperatureMinTime = convertUnixTime2String(temperatureMinTime)
-        self.temperatureMax = temperatureMax
-        self.temperatureMaxTime = convertUnixTime2String(temperatureMaxTime)
-        self.apparentTemperatureMin = apparentTemperatureMin
-        self.apparentTemperatureMinTime = convertUnixTime2String(apparentTemperatureMinTime)
-        self.apparentTemperatureMax = apparentTemperatureMax
-        self.apparentTemperatureMaxTime = convertUnixTime2String(apparentTemperatureMaxTime)
         self.nearest_station = nearest_station
         self.units = units
 
@@ -215,14 +206,6 @@ class CityForecastDaily:
         print("uvIndexTime ", self.uvIndexTime)
         print("visibility ", self.visibility)
         print("ozone ", self.ozone)
-        print("temperatureMin ", self.temperatureMin)
-        print("temperatureMinTime ", self.temperatureMinTime)
-        print("temperatureMax ", self.temperatureMax)
-        print("temperatureMaxTime ", self.temperatureMaxTime)
-        print("apparentTemperatureMin ", self.apparentTemperatureMin)
-        print("apparentTemperatureMinTime ", self.apparentTemperatureMinTime)
-        print("apparentTemperatureMax ", self.apparentTemperatureMax)
-        print("apparentTemperatureMaxTime ", self.apparentTemperatureMaxTime)
         print("nearest_station ", self.nearest_station)
         print("units ", self.units)
 
@@ -338,14 +321,6 @@ def fetchCityWeather(country, name, latitude, longitude, appid):
                                                        getApiValue(item, "uvIndexTime"),
                                                        getApiValue(item, "visibility"),
                                                        getApiValue(item, "ozone"),
-                                                       getApiValue(item, "temperatureMin"),
-                                                       getApiValue(item, "temperatureMinTime"),
-                                                       getApiValue(item, "temperatureMax"),
-                                                       getApiValue(item, "temperatureMaxTime"),
-                                                       getApiValue(item, "apparentTemperatureMin"),
-                                                       getApiValue(item, "apparentTemperatureMinTime"),
-                                                       getApiValue(item, "apparentTemperatureMax"),
-                                                       getApiValue(item, "apparentTemperatureMaxTime"),
                                                        getApiValue(json_data, "flags", "nearest-station"),
                                                        getApiValue(json_data, "flags", "units")))
     # alerts list
@@ -509,10 +484,7 @@ for item in cityWeather:
                              forecast.pressure, forecast.windSpeed, forecast.windGust, forecast.windGustTime,
                              forecast.windBearing, forecast.cloudCover, forecast.uvIndex, forecast.uvIndexTime,
                              forecast.visibility,
-                             forecast.ozone, forecast.temperatureMin, forecast.temperatureMinTime,
-                             forecast.temperatureMax, forecast.temperatureMaxTime, forecast.apparentTemperatureMin,
-                             forecast.apparentTemperatureMinTime, forecast.apparentTemperatureMax,
-                             forecast.apparentTemperatureMaxTime, forecast.nearest_station, forecast.units])
+                             forecast.ozone, forecast.nearest_station, forecast.units])
         if len(item.cityForecast) > 0:
             printLog("End *****************")
 
