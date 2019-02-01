@@ -279,6 +279,12 @@ def convertUnixTime2String(unixTime):
 
 
 ########################################################################################################################
+### function to generate load id(current unix time)
+def generateLoadId():
+    return int(datetime.now().timestamp())
+
+
+########################################################################################################################
 # function to fetch weather data from DarkSky web page
 def fetchCityWeather(country, name, latitude, longitude, appid):
     url = "https://api.darksky.net/forecast/{APPID}/{LATITUDE},{LONGITUDE}?exclude=minutely,hourly&units=si".format(
@@ -452,6 +458,9 @@ for item in config_data["City"]:
     city_list.append(City(item["name"], item["country"], item["latitude"], item["longitude"]))
 
 ########################################################################################################################
+# generate load id
+loadId = generateLoadId()
+
 # create a list of city with weather data
 cityWeather = list()
 for city in city_list:
@@ -471,7 +480,7 @@ for item in cityWeather:
     if not test_mode_no_db:
         printLog("inserting data weather current", item.name)
         cursor.callproc('ADD_CITY_WEATHER',
-                        [item.country, item.name, item.lat, item.lon, item.timezone, item.date_time, item.weather,
+                        [loadId, item.country, item.name, item.lat, item.lon, item.timezone, item.date_time, item.weather,
                          item.weather_icon, item.precipIntensity,
                          item.precipProbability, item.precipType, item.temperature, item.apparentTemperature,
                          item.dewPoint, item.humidity, item.pressure, item.windSpeed, item.windGust,
@@ -485,7 +494,7 @@ for item in cityWeather:
         for forecast in item.cityForecast:
             printLog("inserting data forecast ", item.name, "utc", forecast.date_time)
             cursor.callproc('ADD_WEATHER_DAILY_FORECAST',
-                            [forecast.name, forecast.country, forecast.latitude, forecast.longitude, forecast.date_time,
+                            [loadId,forecast.name, forecast.country, forecast.latitude, forecast.longitude, forecast.date_time,
                              forecast.timezone, forecast.weather, forecast.weather_icon, forecast.sunriseTime,
                              forecast.sunsetTime,
                              forecast.moonPhase, forecast.precipIntensity, forecast.precipIntensityMax,
@@ -508,11 +517,11 @@ for item in cityWeather:
             printLog("inserting data alert ", item.name, "utc", alert.date_time)
             # insert alerts
             cursor.callproc('ADD_WEATHER_ALERT',
-                            [alert.title, alert.region, alert.severity, alert.date_time, alert.timezone, alert.expires,
+                            [loadId,alert.title, alert.region, alert.severity, alert.date_time, alert.timezone, alert.expires,
                              alert.description, alert.uri])
             # insert region2city relations
             printLog("inserting region2city relations ", item.name, "utc", alert.date_time)
-            cursor.callproc('ADD_WEATHER_CITY2REGION', [alert.region, item.name, item.lat, item.lon])
+            cursor.callproc('ADD_WEATHER_CITY2REGION', [loadId,alert.region, item.name, item.lat, item.lon])
         if len(item.alert_list) > 0:
             printLog("End *****************")
 
