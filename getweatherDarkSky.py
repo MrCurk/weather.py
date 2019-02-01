@@ -476,8 +476,8 @@ for item in cityWeather:
                          item.precipProbability, item.precipType, item.temperature, item.apparentTemperature,
                          item.dewPoint, item.humidity, item.pressure, item.windSpeed, item.windGust,
                          item.windBearing, item.cloudCover, item.uvIndex, item.visibility, item.ozone,
-                         item.nearest_station, item.units, item.forecast_summary
-                         # TODO , item.nearestStormBearing, item.nearestStormDistance , item.precipIntensityError
+                         item.nearest_station, item.units, item.forecast_summary, item.nearestStormBearing,
+                         item.nearestStormDistance, item.precipIntensityError
                          ])
         print()
 
@@ -498,7 +498,7 @@ for item in cityWeather:
                              forecast.apparentTemperatureLowTime, forecast.dewPoint, forecast.humidity,
                              forecast.pressure, forecast.windSpeed, forecast.windGust, forecast.windGustTime,
                              forecast.windBearing, forecast.cloudCover, forecast.uvIndex, forecast.uvIndexTime,
-                             forecast.visibility, forecast.ozone, #TODO forecast.precipIntensityError
+                             forecast.visibility, forecast.ozone, forecast.precipIntensityError,
                              forecast.nearest_station, forecast.units])
         if len(item.cityForecast) > 0:
             printLog("End *****************")
